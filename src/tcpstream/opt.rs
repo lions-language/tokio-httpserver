@@ -7,7 +7,6 @@ use std::collections;
 
 use crate::*;
 use crate::stream;
-use crate::stream::Stream as StreamTrait;
 
 const BUF_SIZE: usize = 4096;
 
