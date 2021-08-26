@@ -3,10 +3,9 @@ use tokio::io::{AsyncReadExt};
 use tokio::net::tcp::OwnedReadHalf;
 
 use std::io;
-use std::collections;
+use std::collections::VecDeque;
 
 use crate::*;
-use crate::stream;
 
 const BUF_SIZE: usize = 4096;
 
@@ -16,8 +15,7 @@ pub struct Backtrace<'a> {
     index: usize
 }
 
-#[async_trait::async_trait]
-impl<'a> stream::Backtrace for Backtrace<'a> {
+impl Backtrace<'a> {
     fn commit(&mut self) {
         self.stream.skip_next_n(self.index);
     }
@@ -100,8 +98,7 @@ pub struct Stream {
     stream: OwnedReadHalf,
 }
 
-#[async_trait::async_trait]
-impl stream::Stream for Stream {
+impl Stream {
     type Backtrace<'a> = Backtrace<'a>;
 
     async fn lookup_next_one(&mut self) -> Result<u8> {
