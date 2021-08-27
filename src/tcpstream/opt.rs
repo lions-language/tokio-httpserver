@@ -3,7 +3,7 @@ use tokio::io::{AsyncReadExt};
 use tokio::net::tcp::OwnedReadHalf;
 
 use std::io;
-use std::collections::VecDeque;
+use std::collections::{vec_deque, VecDeque};
 
 use crate::*;
 
@@ -71,7 +71,7 @@ impl Backtrace<'a> {
         self.index
     }
 
-    fn take_all_iter(&mut self) -> std::collections::vec_deque::Drain<'_, u8> {
+    fn take_all_iter(&mut self) -> vec_deque::Drain<'_, u8> {
         self.stream.buffer.drain(0..self.index)
     }
 
@@ -91,7 +91,7 @@ impl<'a> Backtrace<'a> {
 
 /// ////////////////////////////////
 pub struct Stream {
-    buffer: collections::VecDeque<u8>,
+    buffer: VecDeque<u8>,
 
     count: usize,
 
@@ -176,7 +176,7 @@ impl Stream {
         Ok(())
     }
 
-    fn take_n_iter(&mut self, n: usize) -> Result<std::collections::vec_deque::Drain<'_, u8>> {
+    fn take_n_iter(&mut self, n: usize) -> Result<vec_deque::Drain<'_, u8>> {
         if n > self.buffer.len() {
             return Err(Error::Content(
                     format!("TcpStream::take_n_iter n[{}] > self.buffer.len() [{}]"
@@ -303,7 +303,7 @@ impl Stream {
 
     pub fn new(stream: OwnedReadHalf) -> Self {
         Self {
-            buffer: collections::VecDeque::new(),
+            buffer: VecDeque::new(),
 
             count: 0 as usize,
 
