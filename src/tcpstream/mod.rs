@@ -1,9 +1,8 @@
 use tokio::net;
-use tokio::io::{AsyncReadExt};
+use tokio::io::{self, AsyncReadExt, AsyncWrite};
 use tokio::net::tcp::OwnedReadHalf;
 use tokio::sync::RwLock;
 
-use std::io::{AsyncWrite};
 use std::any::Any;
 use std::sync::Arc;
 use std::pin::Pin;
@@ -327,7 +326,7 @@ pub struct Context {
 pub type FutureExecutor = Pin<Box<Future<Output = ()> + Send + 'static>>;
 pub type FutureCreator<Writer: AsyncWrite + Send + Unpin>
     = fn(Option<SharedContext>, Request, Response<Writer>) -> FutureExecutor;
-// 
-// pub type BodyBuilder<'a> = Pin<Box<Future<Output = Result<SendAny>> + 'a>>;
+ 
+pub type BodyBuilder<'a> = Pin<Box<Future<Output = Result<SendAny>> + 'a>>;
 // pub type BodyBuilderCreator<'a, S: stream::Stream> = fn(&'a mut S, &'a Box<RequestHeader>) -> BodyBuilder<'a>;
 
