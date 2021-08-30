@@ -1,8 +1,14 @@
 use tokio::net;
 use tokio::io::{AsyncReadExt};
 use tokio::net::tcp::OwnedReadHalf;
+use tokio::sync::RwLock;
 
-use std::io;
+use std::io::{AsyncWrite};
+use std::any::Any;
+use std::sync::Arc;
+use std::pin::Pin;
+use std::marker::Unpin;
+use std::future::Future;
 use std::collections::{vec_deque, VecDeque};
 
 use crate::*;
@@ -310,15 +316,17 @@ impl Stream {
 
 pub(crate) mod opt;
 
-// pub type SharedContext = Arc<RwLock<Context>>;
-// 
-// pub struct Context {
-//     pub data: SendAny
-// }
+pub type SendAny = Box<Any + Send>;
 
-// pub type FutureExecutor = Pin<Box<Future<Output = ()> + Send + 'static>>;
-// pub type FutureCreator<Writer: tokio::io::AsyncWrite + Send + Unpin>
-//     = fn(Option<SharedContext>, Request, Response<Writer>) -> FutureExecutor;
+pub type SharedContext = Arc<RwLock<Context>>;
+
+pub struct Context {
+    pub data: SendAny
+}
+
+pub type FutureExecutor = Pin<Box<Future<Output = ()> + Send + 'static>>;
+pub type FutureCreator<Writer: AsyncWrite + Send + Unpin>
+    = fn(Option<SharedContext>, Request, Response<Writer>) -> FutureExecutor;
 // 
 // pub type BodyBuilder<'a> = Pin<Box<Future<Output = Result<SendAny>> + 'a>>;
 // pub type BodyBuilderCreator<'a, S: stream::Stream> = fn(&'a mut S, &'a Box<RequestHeader>) -> BodyBuilder<'a>;
