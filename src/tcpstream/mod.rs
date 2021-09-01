@@ -324,9 +324,9 @@ pub struct Context {
     pub data: SendAny
 }
 
-pub type FutureExecutor = Pin<Box<Future<Output = ()> + Send + 'static>>;
-pub type FutureCreator<Writer: AsyncWrite + Send + Unpin>
-    = fn(Option<SharedContext>, Request, Response<Writer>) -> FutureExecutor;
+pub type HandlerExecutor = Pin<Box<Future<Output = ()> + Send + 'static>>;
+pub type HandlerCreator<Writer: AsyncWrite + Send + Unpin>
+    = fn(Option<SharedContext>, Request, Response<Writer>) -> HandlerExecutor;
  
 pub type BodyBuilder<'a> = Pin<Box<Future<Output = Result<SendAny>> + 'a>>;
 pub type BodyBuilderCreator<'a> = fn(&'a mut Stream, &'a Box<RequestHeader>) -> BodyBuilder<'a>;

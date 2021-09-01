@@ -2,13 +2,13 @@ use tokio::{self, task, net, sync, sync::mpsc};
 use std::future::Future;
 use std::sync::Arc;
 
-pub struct Pool<T>
+pub struct ExecutePool<T>
     where T: Future + Send + 'static,
           T::Output: Send + 'static {
     sender: mpsc::Sender<T>
 }
 
-impl<T> Pool<T>
+impl<T> ExecutePool<T>
     where T: Future + Send + 'static,
           T::Output: Send + 'static {
 

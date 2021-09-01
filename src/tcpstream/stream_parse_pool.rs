@@ -1,25 +1,21 @@
 use tokio::{self, task, net, sync::RwLock, sync::mpsc};
-use tokio::net::TcpStream as TokioTcpStream;
 use tokio::net::tcp::{OwnedReadHalf, OwnedWriteHalf};
 
 use std::future::Future;
 use std::sync::{Arc};
 use std::pin::Pin;
 
-use crate::stream::tcp::Stream as TcpStream;
-use crate::route::url::{SharedRoute, FutureExecutor};
-
-use crate::taskpool::future::Pool as FuturePool;
-
 use crate::*;
+use crate::tcpstream::HandlerExecuteor;
+use crate::handler::handler_pool::ExecutePool;
 
-pub type HandlePool = Arc<RwLock<FuturePool<FutureExecutor>>>;
+pub type HandlePool = Arc<RwLock<ExecutePool<HandlerExecutor>>>;
 
-pub type Creator = fn(TokioTcpStream, SharedRoute<OwnedWriteHalf>, HandlePool) -> Pin<Box<Future<Output = ()>>>;
+pub type Creator = fn(TcpStream, SharedRoute<OwnedWriteHalf>, HandlePool) -> Pin<Box<Future<Output = ()>>>;
 
 struct Item {
     creator: Creator,
-    stream: TokioTcpStream,
+    stream: TcpStream,
     route: SharedRoute<OwnedWriteHalf>,
     handle_pool: HandlePool
 }
@@ -30,7 +26,7 @@ pub struct Pool {
 
 impl Pool {
     pub async fn execute(
-        &mut self, creator: Creator, stream: TokioTcpStream
+        &mut self, creator: Creator, stream: TcpStream
         , route: SharedRoute<OwnedWriteHalf>, handle_pool: HandlePool) {
         self.sender.send(Item{
             creator: creator,
