@@ -313,9 +313,6 @@ impl Stream {
     }
 }
 
-pub(crate) mod opt;
-pub(crate) mod stream_parse_pool;
-
 pub type SendAny = Box<Any + Send>;
 
 pub type SharedContext = Arc<RwLock<Context>>;
@@ -333,3 +330,6 @@ pub type SharedRoute<Writer: AsyncWrite + Send + Unpin> = Arc<RwLock<Route<Write
 pub type BodyBuilder<'a> = Pin<Box<Future<Output = Result<SendAny>> + 'a>>;
 pub type BodyBuilderCreator<'a> = fn(&'a mut Stream, &'a Box<RequestHeader>) -> BodyBuilder<'a>;
 
+pub(crate) mod opt;
+pub(crate) mod stream_parse_pool;
+pub(crate) mod route;

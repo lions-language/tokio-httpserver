@@ -7,8 +7,7 @@ use std::marker::Unpin;
 use std::sync::{self, Arc};
 use std::sync::RwLock;
 
-use crate::parse::url_trietree::TrieTree;
-use crate::route::header::Route as HeaderRoute;
+use crate::tcpstream::route::url_trietree::TrieTree as UrlTree;
 use crate::stream::{self, Stream};
 
 use crate::*;
@@ -67,7 +66,7 @@ pub struct Route<Writer: AsyncWrite + Send + Unpin> {
 impl<Writer: AsyncWrite + Send + Unpin> Route<Writer> {
     pub fn register(
         &mut self, path: &[u8], method: Method
-        , creator: FutureCreator<Writer>, body_builder_creator: BodyBuilderCreatorPtr
+        , creator: FutureCreator<Writer>
         , context: Option<SharedContext>
         , options: RegisterOptions) -> Result<()> {
         let node = self.tree.push(path, MethodRoute::new);
@@ -77,29 +76,7 @@ impl<Writer: AsyncWrite + Send + Unpin> Route<Writer> {
                     .data_mut().as_mut().unwrap()
                     .insert(
                         method, Data::new(
-                            creator, HeaderRoute::new(), body_builder_creator, context, options));
-            },
-            Err(err) => {
-                return Err(err.into());
-            }
-        }
-    }
-
-    pub fn register_with_header_route<F: Fn(&mut HeaderRoute)>(
-        &mut self, path: &[u8], method: Method, creator: FutureCreator<Writer>
-        , body_builder_creator: BodyBuilderCreatorPtr, f: F
-        , context: Option<SharedContext>
-        , options: RegisterOptions) -> Result<()> {
-        let mut header_route = HeaderRoute::new();
-        f(&mut header_route);
-
-        let node = self.tree.push(path, MethodRoute::new);
-        match node {
-            Ok(n) => {
-                return n.write().unwrap()
-                    .data_mut().as_mut().unwrap()
-                    .insert(
-                        method, Data::new(creator, header_route, body_builder_creator, context, options));
+                            creator, HeaderRoute::new(), context, options));
             },
             Err(err) => {
                 return Err(err.into());
