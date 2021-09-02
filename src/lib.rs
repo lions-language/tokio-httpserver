@@ -61,11 +61,18 @@ impl Version {
 //////////////////////////////
 pub type HeaderIndex = usize;
 
+pub enum HeaderValue {
+    Integer(u64),
+    ByteArray(ByteArray),
+    Utf8String(String),
+    Custom(SendAny)
+}
+
 #[derive(Debug, Default)]
 pub struct Headers {
-    indexs: Vec<SendAny>,
+    indexs: Vec<HeaderValue>,
     next_index: HeaderIndex,
-    bytearrays: std::collections::HashMap<ByteArray, ByteArray>
+    bytearrays: std::collections::HashMap<ByteArray, HeaderValue>
 }
 
 impl Headers {
@@ -113,6 +120,12 @@ impl Headers {
 }
 
 /////////////////////////////
+pub enum Body {
+    ByteArray(Vec<u8>),
+    Utf8String(String),
+    Custom(SendAny)
+}
+
 #[derive(Default)]
 pub struct RequestHeader {
     pub method: Method,
@@ -122,7 +135,7 @@ pub struct RequestHeader {
 
 pub struct Request {
     pub header: Box<RequestHeader>,
-    pub body: Option<SendAny>
+    pub body: Option<Body>
 }
 
 pub type SharedResponseSender = std::sync::Arc<tokio::sync::RwLock<tokio::sync::mpsc::Sender<ResponseContent>>>;
@@ -152,7 +165,7 @@ pub struct ResponseUncheckHeaders {
 pub struct ResponseContent {
     pub captial: ResponseCaptial,
     pub headers: ResponseUncheckHeaders,
-    pub body: ByteArray
+    pub body: Body
 }
 
 pub struct Response<Writer: tokio::io::AsyncWrite + Send> {
