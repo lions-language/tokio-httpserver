@@ -25,6 +25,26 @@ pub fn new_bytearray() -> ByteArray {
     Vec::new()
 }
 
+/////////////////////////////
+pub enum HeaderValueType {
+    Integer,
+    ByteArray,
+    Utf8String,
+    Custom
+}
+
+/////////////////////////////
+pub enum BodyType {
+    ByteArray,
+    Utf8String,
+    Custom
+}
+
+pub struct GroupParams {
+    pub header_value_type: HeaderValueType,
+    pub body_type: BodyType
+}
+
 /////////////////////////////////////////
 #[derive(Eq, PartialEq, Debug, Hash)]
 pub enum Method {

@@ -321,14 +321,7 @@ pub struct Context {
     pub data: SendAny
 }
 
-pub type HandlerExecutor = Pin<Box<Future<Output = ()> + Send + 'static>>;
-pub type HandlerCreator<Writer: AsyncWrite + Send + Unpin>
-    = fn(Option<SharedContext>, Request, Response<Writer>) -> HandlerExecutor;
-
 pub type SharedRoute<Writer: AsyncWrite + Send + Unpin> = Arc<RwLock<Route<Writer>>>;
- 
-pub type BodyBuilder<'a> = Pin<Box<Future<Output = Result<SendAny>> + 'a>>;
-pub type BodyBuilderCreator<'a> = fn(&'a mut Stream, &'a Box<RequestHeader>) -> BodyBuilder<'a>;
 
 pub(crate) mod opt;
 pub(crate) mod stream_parse_pool;
