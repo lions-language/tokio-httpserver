@@ -6,7 +6,6 @@ use std::sync::{Arc};
 use std::pin::Pin;
 
 use crate::*;
-use crate::tcpstream::HandlerExecuteor;
 use crate::handler::handler_pool::ExecutePool;
 
 pub type HandlePool = Arc<RwLock<ExecutePool<HandlerExecutor>>>;

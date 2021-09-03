@@ -313,16 +313,10 @@ impl Stream {
     }
 }
 
-pub type SendAny = Box<Any + Send>;
-
-pub type SharedContext = Arc<RwLock<Context>>;
-
-pub struct Context {
-    pub data: SendAny
-}
-
 pub type SharedRoute<Writer: AsyncWrite + Send + Unpin> = Arc<RwLock<Route<Writer>>>;
 
 pub(crate) mod opt;
 pub(crate) mod stream_parse_pool;
-pub(crate) mod route;
+pub(crate) mod handler_pool;
+// pub(crate) mod url;
+// pub(crate) mod url_trietree;

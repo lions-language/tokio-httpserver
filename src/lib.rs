@@ -25,6 +25,13 @@ pub fn new_bytearray() -> ByteArray {
     Vec::new()
 }
 
+////////////////////////////
+pub struct Context {
+    pub data: SendAny
+}
+
+pub type SharedContext = Arc<RwLock<Context>>;
+
 /////////////////////////////
 pub enum HeaderValueType {
     Integer,

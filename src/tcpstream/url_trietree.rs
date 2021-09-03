@@ -2,7 +2,7 @@ use std::collections;
 use std::sync;
 
 use crate::*;
-use crate::stream;
+use crate::tcpstream::Stream;
 
 pub struct TrieNode<T> {
     data: Option<T>,
@@ -101,8 +101,8 @@ impl<T> TrieTree<T> {
         Ok(leaf_node)
     }
 
-    pub async fn find_from_stream<S: stream::Stream>(
-        &self, stream: &mut S, length: &mut usize) -> Result<sync::Arc<sync::RwLock<TrieNode<T>>>> {
+    pub async fn find_from_stream(
+        &self, stream: &mut Stream, length: &mut usize) -> Result<sync::Arc<sync::RwLock<TrieNode<T>>>> {
 
         *length = 0;
 
