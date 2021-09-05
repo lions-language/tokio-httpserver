@@ -1,5 +1,5 @@
 pub mod stream_handler;
-pub mod route;
+// pub mod route;
 
 pub type Any = Box<dyn std::any::Any>;
 pub type SendAny = Box<dyn std::any::Any + Send + Sync>;
@@ -26,6 +26,22 @@ pub fn new_bytearray() -> ByteArray {
 }
 
 ////////////////////////////
+#[derive(Clone)]
+pub struct RegisterOptions {
+    pub header_value_type: HeaderValueType,
+    pub body_type: BodyType
+}
+
+impl Default for RegisterOptions {
+    fn default() -> Self {
+        Self {
+            header_value_type: HeaderValueType::Utf8String,
+            body_type: BodyType::Utf8String
+        }
+    }
+}
+
+////////////////////////////
 pub struct Context {
     pub data: SendAny
 }
@@ -45,11 +61,6 @@ pub enum BodyType {
     ByteArray,
     Utf8String,
     Custom
-}
-
-pub struct GroupParams {
-    pub header_value_type: HeaderValueType,
-    pub body_type: BodyType
 }
 
 /////////////////////////////////////////

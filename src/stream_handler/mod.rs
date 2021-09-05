@@ -313,8 +313,6 @@ impl Stream {
     }
 }
 
-pub type SharedRoute<Writer: AsyncWrite + Send + Unpin> = Arc<RwLock<Route<Writer>>>;
-
 pub(crate) mod opt;
 pub(crate) mod stream_parse_pool;
 pub(crate) mod handler_pool;

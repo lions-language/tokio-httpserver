@@ -7,8 +7,8 @@ use std::marker::Unpin;
 use std::sync::{self, Arc};
 use std::sync::RwLock;
 
-use crate::tcpstream::route::url_trietree::TrieTree as UrlTree;
-use crate::stream::{self, Stream};
+use crate::stream_handler::url_trietree::TrieTree as UrlTree;
+use crate::stream_handler::Stream;
 
 use crate::*;
 
@@ -18,19 +18,9 @@ pub struct Context {
     pub data: SendAny
 }
 
-#[derive(Clone)]
-pub struct RegisterOptions {
-}
-
-impl Default for RegisterOptions {
-    fn default() -> Self {
-        Self {
-        }
-    }
-}
-
 pub struct Data<Writer: tokio::io::AsyncWrite + Send + Unpin> {
     pub creator: FutureCreator<Writer>,
+    pub header_route: Arc<sync::RwLock<HeaderRoute>>,
     pub context: Option<SharedContext>,
     pub options: RegisterOptions
 }
@@ -39,6 +29,7 @@ impl<Writer: AsyncWrite + Send + Unpin> Clone for Data<Writer> {
     fn clone(&self) -> Self {
         Self {
             creator: self.creator.clone(),
+            header_route: self.header_route.clone(),
             context: self.context.clone(),
             options: self.options.clone()
         }
@@ -47,10 +38,12 @@ impl<Writer: AsyncWrite + Send + Unpin> Clone for Data<Writer> {
 
 impl<Writer: AsyncWrite + Send + Unpin> Data<Writer> {
     pub fn new(creator: FutureCreator<Writer>
+               , hr: HeaderRoute
                , context: Option<SharedContext>
                , options: RegisterOptions) -> Self {
         Self {
             creator: creator,
+            hr: hr,
             context: context,
             options: options
         }
@@ -84,8 +77,8 @@ impl<Writer: AsyncWrite + Send + Unpin> Route<Writer> {
         }
     }
 
-    pub async fn find<S: Stream>(
-        &self, stream: &mut S, method: &Method, length: &mut usize) -> Result<Data<Writer>> {
+    pub async fn find(
+        &self, stream: &mut Stream, method: &Method, length: &mut usize) -> Result<Data<Writer>> {
         let node = match self.tree.find_from_stream(stream, length).await {
             Ok(node) => node,
             Err(err) => {
